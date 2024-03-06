@@ -5,6 +5,8 @@ set(DCMAKE_BUILD_TYPE Release)
 
 project(mapAlignment)
 
+set (Pangolin_DIR "/usr/local/lib/cmake/Pangolin/PangolinConfig.cmake")
+
 find_package(PCL REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -20,10 +22,42 @@ include_directories(${Pangolin_INCLUDE_DIRS})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-FILE(GLOB SRC_FILES "src/*.cpp")
+
+# generate library 
+add_library(${PROJECT_NAME}
+    # source files 
+    src/matcher.cpp
+    src/neighborhood.cpp
+    src/pointCloudMapping.cpp
+    src/registration.cpp
+    src/toolfile.cpp
+    # src/utils.cpp
+)
+
+add_dependencies(${PROJECT_NAME} 
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${PCL_LIBRARIES} 
+  ${Pangolin_LIBRARIES} 
+  ${OpenCV_LIBS} 
+  ${EIGEN3_LIBRARIES}
+)
+
+target_link_libraries(${PROJECT_NAME}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${PCL_LIBRARIES} 
+  ${Pangolin_LIBRARIES} 
+  ${OpenCV_LIBS} 
+  ${EIGEN3_LIBRARIES}
+)
 
 
-add_executable(mapAlignment ${SRC_FILES})
+# generate examples 
+add_executable(example_1 src/main.cpp)
+target_link_libraries(example_1 ${PROJECT_NAME} ${PCL_LIBRARIES} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} ${EIGEN3_LIBRARIES})
+add_dependencies(example_1 ${PROJECT_NAME})
 
-target_link_libraries(mapAlignment ${PCL_LIBRARIES} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} ${EIGEN3_LIBRARIES})
+# generate examples 
+add_executable(example_2 src/main_airsim_xview.cpp)
+target_link_libraries(example_2 ${PROJECT_NAME} ${PCL_LIBRARIES} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} ${EIGEN3_LIBRARIES})
+add_dependencies(example_2 ${PROJECT_NAME})
 

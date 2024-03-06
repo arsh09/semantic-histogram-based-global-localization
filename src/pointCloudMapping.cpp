@@ -461,20 +461,13 @@ void showPointCloud(const vector<VectorXd, Eigen::aligned_allocator<VectorXd>> &
 }
 
 void pointCloudMapping::pointVisuallize(pcl::PointCloud<pcl::PointXYZRGB>::Ptr&insertCloud1, pcl::PointCloud<pcl::PointXYZRGB>::Ptr&insertCloud2, MatrixXi matcherID, MatrixXf R, MatrixXf T){
+    
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp1(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp2(new pcl::PointCloud<pcl::PointXYZRGB>);
     //obtain the clouds.
-    Matrix4f TransforMatrix = Matrix4f::Identity();
-    // for(int row = 0; row<3; row++){
-    //     for(int col=0; col<3; col++){
-    //         TransforMatrix(row, col) = R(row, col);
-    //     }
-    // }
-    // TransforMatrix(0, 3) = T(0, 0);
-    // TransforMatrix(1, 3) = T(1, 0);
-    // TransforMatrix(2, 3) = T(2, 0);
 
+    Matrix4f TransforMatrix = Matrix4f::Identity();
     TransforMatrix(2, 3) = TransforMatrix(2, 3)+80;  
     *temp1 = *insertCloud1;
     *temp2 = *insertCloud2;
@@ -495,7 +488,7 @@ void pointCloudMapping::pointVisuallize(pcl::PointCloud<pcl::PointXYZRGB>::Ptr&i
 
     int count = 0;
     int line_numeber = 0;
-    char str[25];//
+    char str[25];
     while(!viewer->wasStopped()){
         viewer->spinOnce(1000);
         line_numeber++;
@@ -506,22 +499,5 @@ void pointCloudMapping::pointVisuallize(pcl::PointCloud<pcl::PointXYZRGB>::Ptr&i
         count++;
 
     }
-
-    // vector<VectorXd, Eigen::aligned_allocator<VectorXd>> pointcloud;
-    // cout<<"global size: "<<insertCloud->points.size()<<endl;
-    // for(int i = 0; i<insertCloud->points.size(); i++){
-    //         int r = insertCloud->points[i].r;
-    //         int g = insertCloud->points[i].g;
-    //         int b = insertCloud->points[i].b;
-    //         Eigen::VectorXd point1(6);
-    //         point1<< 0, 0, 0, r/ 255.0, g/255.0, b/255.0;
-    //         point1[0] = double(insertCloud->points[i].x);
-    //         //cout << "X" << " " << point1[0]  << endl;
-    //         point1[1] = double(insertCloud->points[i].y);
-    //         //cout << "Y" << " " << point1[1] << endl;
-    //         point1[2] = double(insertCloud->points[i].z);
-    //         //cout << "Z" << " " << point1[2] << endl;
-    //         pointcloud.push_back(point1);
-    // }
-    // showPointCloud(pointcloud);
+ 
 }

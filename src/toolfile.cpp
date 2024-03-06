@@ -27,7 +27,6 @@ void insertPose(string&dir, Mat&pose, int number){
         pose.at<double>(i, 4) = e[i];
         pose.at<double>(i, 5) = f[i];
         pose.at<double>(i, 6) = g[i];
-
         
     } 
     myfile.close();    
@@ -202,10 +201,7 @@ void gatherPointCloudData(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud, vector<
     Matrix4f camera_pose = Matrix4f::Identity();
 
     for(int i =startpoint; i<fileNumber; i++){
-        cout<<"number: "<<i<<endl;
-        if(i%3 != 0 && i !=0){
-            //continue;
-        }
+        cout<<"\n\nFrame ID: "<<i<<endl;
 
         //load the pose of the current image
         frame_pose = obtainTransformMatrix(pose, i, 1);
@@ -218,8 +214,13 @@ void gatherPointCloudData(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud, vector<
         //load the rgb image, depth image and the segmentation image
         char base_name[256];
         sprintf(base_name,"%d.png",i);
+
         string depth_file_name =dir+"depth/depth_" + base_name;
-        string rgb_file = dir+"segmentation/segmentation_"+base_name;
+        // string rgb_file = dir+"segmentation/segmentation_"+base_name;
+        string rgb_file = dir+"segmentation/segmentation_color_"+base_name;
+
+        std::cout << "Depth-Segmentation pairs: \nDepth: " << depth_file_name << "\nSegmentation: " << rgb_file << std::endl;
+
         //only SYNTHIA need
         //string label_file = dir+"label/segmentation_"+base_name;
 

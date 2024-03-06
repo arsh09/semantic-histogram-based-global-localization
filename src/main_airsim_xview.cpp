@@ -1,11 +1,10 @@
 #include "pointCloudMapping.hpp"
 #include "neighborhood.hpp"
-#include "toolfile.hpp"
 #include <string.h>
 #include <boost/thread/thread.hpp>
 #include "matcher.hpp"
 #include "registration.hpp"
-
+#include "toolfile.hpp"
 
 using namespace cv;
 using namespace std;
@@ -20,25 +19,15 @@ int main(int argc, const char * argv[])
         return 1;
     }
 
-    char file_name1[1024];
-    char fullpath1[1024];
-    char file_name2[1024];
-    char fullpath2[1024];
 
-    sprintf(file_name1, "%s/", argv[1]);
-    sprintf(fullpath1,"/data/airsim_2/%s",file_name1);
     int startPoint1 = atoi(argv[2]);
     int fileNumber1 = atoi(argv[3]);
-    cout<<"file number is: "<<fileNumber1<<endl;
     
-    sprintf(file_name2, "%s/", argv[4]);
-    sprintf(fullpath2,"/data/airsim_2/%s",file_name2);
-
     int startPoint2 = atoi(argv[5]);
     int fileNumber2 = atoi(argv[6]);
 
-    string dir1 = "/data/airsim_2/backwardCar/"; // fullpath1;
-    string dir2 = "/data/airsim_2/forwardCar/";  // fullpath2;
+    string dir2 = "/data/airsim_xview/forward/"; // fullpath1;
+    string dir1 = "/data/airsim_xview/forward/";  // fullpath2;
     
     //generate the camera parameter
     vector<float> camera(4);
@@ -58,36 +47,46 @@ int main(int argc, const char * argv[])
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    Mat pose1 = cv::Mat::zeros(1000, 7, CV_64FC1);
-    Mat pose2 = cv::Mat::zeros(1000, 7, CV_64FC1);
+    int num_poses = 5107;
+    Mat pose1 = cv::Mat::zeros(num_poses, 7, CV_64FC1);
+    Mat pose2 = cv::Mat::zeros(num_poses, 7, CV_64FC1);
 
     //generate the correspondent rgb value of all labels in the segmentation image
-    Mat Label = (cv::Mat_<int>(11, 3)<< 175, 6, 140,
-                                    65, 54, 217,
-                                    156, 198, 23,
-                                    184, 145, 182,
-                                    211, 80, 208,
-                                    232, 250, 80,
-                                    234, 20, 250,
-                                    99, 242, 104,
-                                    142, 1, 246,
-                                    81, 13, 36,
-                                    112, 105, 191);
+    Mat label_bgr = cv::imread("/data/airsim_xview/segmentation_pallet.png");
+    Mat Label; 
+    Mat label_gray_img;
+    cvtColor(label_bgr, Label, COLOR_BGR2RGB);
+    cvtColor(label_bgr, label_gray_img, COLOR_BGR2GRAY);
+    std::vector<uchar> label_gray(255);
+    if (label_gray_img.isContinuous()) {
+        label_gray.assign(label_gray_img.data, label_gray_img.data + label_gray_img.total()*label_gray_img.channels());
+    }    
 
-    //Obtain the label number
-    vector<uchar> label_gray(11);
-    label_gray[0] = 72; label_gray[1] = 76; label_gray[2] = 165; label_gray[3] = 161; label_gray[4] = 134;
-    label_gray[5] = 225; label_gray[6] = 110; label_gray[7] = 184; label_gray[8] = 71; label_gray[9] = 36;
-    label_gray[10] = 117;
+    // Mat Label = (cv::Mat_<int>(11, 3)<< 105,   6,   9,
+    //                                 82,   5,   9,
+    //                                 92,  32,  10,
+    //                                 131,  34,  10,
+    //                                 95,  16,  22,
+    //                                 34,  40,  15,
+    //                                 90,  67,  17,
+    //                                 78,  36,  77,
+    //                                 87,  35,  55,
+    //                                 139,  32, 110,
+    //                                 115,  33,  98);
+
+    // vector<uchar> label_gray(11);
+    // label_gray[0] = 36; label_gray[1] = 28; label_gray[2] = 47; label_gray[3] = 60; label_gray[4] = 40;
+    // label_gray[5] = 35; label_gray[6] = 68; label_gray[7] = 53; label_gray[8] = 53; label_gray[9] = 73;
+    // label_gray[10] = 65;
+
 
 
     //insert the odeometry value
-    insertPose(dir1,pose1, 1000);
-    insertPose(dir2,pose2, 1000);
-    
-    std::cout << "RGB and gray labels are read with sizes: " << Label.size() << "\t" << label_gray.size() << std::endl;
+    insertPose(dir1, pose1, num_poses);
+    insertPose(dir2, pose2, num_poses);
+
     std::cout << "Poses are read with sizes: " << pose1.size() << "\t" << pose2.size() << std::endl;
-        
+
     //initiallize the intial value of the keypoint;
     vector<vector<float> > centerpoint2;
     vector<vector<float> > centerpoint1;
@@ -136,9 +135,8 @@ int main(int argc, const char * argv[])
     R = registration.Rotation;
     T = registration.Translation;
     
-    // float finalDistance = sqrt(pow(T(0, 0), 2) + pow(T(1, 0),2) + pow(T(2, 0),2));
-    
-    // cout<<"final distance: "<<finalDistance<<endl;
+    float finalDistance = sqrt(pow(T(0, 0), 2) + pow(T(1, 0),2) + pow(T(2, 0),2));
+    cout<<"final distance: "<<finalDistance<<endl;
 
 
     // //plot the semantic point and matching with PCL library  

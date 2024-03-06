@@ -170,6 +170,7 @@ matcher::matcher(Descriptor Ds1, Descriptor Ds2, int type){
         VectorXf lablevector1 = Ds1.labelVector;
         VectorXf lablevector2 = Ds2.labelVector;
         
+
         for(int i = 0; i<size1; i++ ){
             MatrixXf descriptor1 = Ds1.getDescriptor(i);
             int lab1 = lablevector1(i);
@@ -195,7 +196,10 @@ matcher::matcher(Descriptor Ds1, Descriptor Ds2, int type){
                     SumBottomRight = SumBottomRight + pow(descriptor2(row, 0), 2);
                 }
                 float SumBottom = sqrt(SumBottomLeft*SumBottomRight);
-                score = SumTop/SumBottom;
+                
+                if ( SumBottom != 0.0 ){
+                    score = SumTop/SumBottom;
+                }
                 scoreMatrix(i, j) = abs(score);
             }
         }
