@@ -117,21 +117,25 @@ int main(int argc, const char * argv[])
     //matching
     MatrixXi matcherID;
     matcher matches(Des1, Des2, 2);
-    cout<<"Before: matches.getGoodMatcher();"<<endl;
+    // cout<<"Before: matches.getGoodMatcher();"<<endl;
     matcherID = matches.getGoodMatcher();
-    cout<<"after: matches.getGoodMatcher();"<<endl;
+    // cout<<"after: matches.getGoodMatcher();"<<endl;
+
 
     //begain registration
     //insert the value
+    // cout<<"Before: registration;"<<endl;
     registration registration(centerpoint1, centerpoint2, matcherID);
+    // cout<<"After: registration;"<<endl;
 
     //reject the outliers with ICP-RANSAC method
-    // registration.matcherRANSAC(10);
+    registration.matcherRANSAC(10);
     MatrixXi inlierID;
     inlierID = registration.inlierID;
 
     //final pose estiamation
     registration.Alignment();
+
     
     R = registration.Rotation;
     T = registration.Translation;

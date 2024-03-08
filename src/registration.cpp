@@ -241,13 +241,17 @@ void registration::matcherRANSAC(float Td){
         int timedifference = (int)((endTime - startTime)*10000);
         srand((int)time(0)+timedifference);
 
+        
         //obtain the random points
         int Count = sourcePoints.rows();
-        for(int i=0; i<4; i++){
-            int randomNum = rand()%Count;
-            sourceRandom.row(i) = sourcePoints.row(randomNum);
-            targetRandom.row(i) = targetPoints.row(randomNum);
+        if (Count > 0 ){
+            for(int i=0; i<4; i++){
+                int randomNum = rand()%Count;
+                sourceRandom.row(i) = sourcePoints.row(randomNum);
+                targetRandom.row(i) = targetPoints.row(randomNum);
+            }
         }
+
 
         //calculate the R and T
         MatrixXf R, T;
@@ -297,27 +301,38 @@ void registration::matcherRANSAC(float Td){
     }
     double AllCount = (double)totalNum;
     double inliCount = (double)(inlierID.rows());
-    double performance = inliCount/AllCount;
     cout<<"inlier num: "<<inliCount<<endl;
-    cout<<"matching performance: "<<performance<<endl;
+    if (AllCount != 0.0){
+        double performance = inliCount/AllCount;
+        cout<<"matching performance: "<<performance<<endl;
+    }
 
 }
 
 void registration::Alignment(){
 
+
+    if (sourcePoints.rows() == 0 || targetPoints.rows() == 0){
+        return ;
+    }
+
     int size = inlierID.rows();
     sourceInliers.resize(size, 3);
     targetInliers.resize(size, 3);
+
+    // std::cout << "Source/Target points sizes: " << sourcePoints.rows() << "  " << targetPoints.rows() << std::endl;
+    // std::cout << "Inlier ID points sizes: " << inlierID.rows() << "  "  << inlierTotalID.rows() <<  std::endl;
+
     for(int i=0; i<size; i++){
-
-        int oldID = inlierTotalID(i);
-
-        sourceInliers.row(i) = sourcePoints.row(oldID);
-
-        targetInliers.row(i) = targetPoints.row(oldID);
+        if ( i < inlierTotalID.rows() ) {
+            int oldID = inlierTotalID(i);
+            sourceInliers.row(i) = sourcePoints.row(oldID);
+            targetInliers.row(i) = targetPoints.row(oldID);
+        }
     }
 
     getTransform(sourceInliers, targetInliers, Rotation, Translation, 1000);
+
     //getWeightedTransform(sourceInliers, targetInliers, Rotation, Translation, labelVector, 1000)
     cout<<"R: "<<Rotation<<endl;
     cout<<"T: "<<Translation<<endl;

@@ -1,36 +1,91 @@
+
 #include "toolfile.hpp"
+
+// void insertPose(string&dir, Mat&pose, int number){
+
+//     double a[number];
+//     double b[number];
+//     double c[number];
+//     double d[number];
+//     double e[number];
+//     double f[number];
+//     double g[number];
+
+//     string txtname = dir+"airsim.txt";
+//     ifstream myfile(txtname);
+//     int N;  
+//     myfile>>N;
+//     int count = 0;
+//     for(int i=0;i<number;i++) 
+//     {
+//         myfile>>a[i]>>b[i]>>c[i]>>d[i]>>e[i]>>f[i]>>g[i];
+//         cout<<a[i]<<" "<<b[i]<<" "<<c[i]<<" "<<d[i]<<" "<<e[i]<<" "<<f[i]<<" "<<g[i]<<endl;
+//         cout<<" "<<endl;
+//         pose.at<double>(i, 0) = a[i];
+//         pose.at<double>(i, 1) = b[i];
+//         pose.at<double>(i, 2) = c[i];
+//         pose.at<double>(i, 3) = d[i];
+//         pose.at<double>(i, 4) = e[i];
+//         pose.at<double>(i, 5) = f[i];
+//         pose.at<double>(i, 6) = g[i];
+        
+//     } 
+//     myfile.close();    
+// }
 
 void insertPose(string&dir, Mat&pose, int number){
 
-    double a[number];
-    double b[number];
-    double c[number];
-    double d[number];
-    double e[number];
-    double f[number];
-    double g[number];
+    // Temporary storage for the file data
+    std::vector<std::vector<float>> data;
 
-    string txtname = dir+"airsim.txt";
-    ifstream myfile(txtname);
-    int N;  
-    myfile>>N;
-    int count = 0;
-    for(int i=0;i<number;i++) 
-    {
-        myfile>>a[i]>>b[i]>>c[i]>>d[i]>>e[i]>>f[i]>>g[i];
-        //cout<<a[i]<<" "<<b[i]<<" "<<c[i]<<" "<<d[i]<<" "<<e[i]<<" "<<f[i]<<" "<<g[i]<<endl;
-        //cout<<" "<<endl;
-        pose.at<double>(i, 0) = a[i];
-        pose.at<double>(i, 1) = b[i];
-        pose.at<double>(i, 2) = c[i];
-        pose.at<double>(i, 3) = d[i];
-        pose.at<double>(i, 4) = e[i];
-        pose.at<double>(i, 5) = f[i];
-        pose.at<double>(i, 6) = g[i];
-        
-    } 
-    myfile.close();    
+    std::cout << "Readning poses...\n" ;
+
+    // Open the file
+    std::ifstream file(dir+"airsim.txt");
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file\n";
+        return ;
+    }
+
+    std::string line;
+    // Read the file line by line
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::vector<float> row(7); // There are 7 columns
+        // std::cout << "Line: " << line << std::endl;
+        for (int i = 0; i < 7; ++i) {
+            std::string token;
+            std::getline(iss, token, ','); // Assuming tab-separated values
+            // std::cout << "Token: " << token << std::endl;
+            row[i] = std::stof(token);
+        }
+        data.push_back(row);
+    }
+
+
+    file.close();
+
+    // Now that we have all data, create an OpenCV Mat with the appropriate size
+    for (size_t i = 0; i < data.size(); ++i) {
+        for (int j = 0; j < 7; ++j) {
+            pose.at<float>(i, j) = data[i][j];
+        }
+    }
+
+    // Example: print the first row (if there is one)
+    if (!data.empty()) {
+        for (int k = 0; k < data.size(); ++k){
+            std::cout << "Pose: " << k << "   ";
+            for (int i = 0; i < 7; ++i) {
+                std::cout << pose.at<float>(k, i) << (i < 6 ? "\t" : "\n");
+            }
+        }
+    }
+
 }
+
+
+
 
 void insertSYNTIAPose(string&dir, Mat&pose, int number){
 
@@ -125,6 +180,14 @@ cv::Mat Quaternion2Matrix (cv::Mat q)
   double y = q.at<double>(2);
   double z = q.at<double>(3);
 
+//   double norm = sqrt( x*x + y*y + z*z + w*w );
+//   if (norm != 1.0){
+//     x = x / norm;
+//     y = y / norm;
+//     z = z / norm;
+//     w = z / norm;
+//   }
+
   double xx = x*x;
   double yy = y*y;
   double zz = z*z;
@@ -217,7 +280,7 @@ void gatherPointCloudData(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud, vector<
 
         string depth_file_name =dir+"depth/depth_" + base_name;
         // string rgb_file = dir+"segmentation/segmentation_"+base_name;
-        string rgb_file = dir+"segmentation/segmentation_color_"+base_name;
+        string rgb_file = dir+"segmentation/segmentation_"+base_name;
 
         std::cout << "Depth-Segmentation pairs: \nDepth: " << depth_file_name << "\nSegmentation: " << rgb_file << std::endl;
 

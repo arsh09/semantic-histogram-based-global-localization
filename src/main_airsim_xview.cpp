@@ -19,15 +19,14 @@ int main(int argc, const char * argv[])
         return 1;
     }
 
-
     int startPoint1 = atoi(argv[2]);
     int fileNumber1 = atoi(argv[3]);
     
     int startPoint2 = atoi(argv[5]);
     int fileNumber2 = atoi(argv[6]);
 
-    string dir2 = "/data/airsim_xview/forward/"; // fullpath1;
-    string dir1 = "/data/airsim_xview/forward/";  // fullpath2;
+    string dir1 = "/data/airsim_xview/" + string(argv[1]) + "/";  // fullpath2;
+    string dir2 = "/data/airsim_xview/" + string(argv[4]) + "/"; // fullpath1;
     
     //generate the camera parameter
     vector<float> camera(4);
@@ -125,7 +124,7 @@ int main(int argc, const char * argv[])
     registration registration(centerpoint1, centerpoint2, matcherID);
 
     //reject the outliers with ICP-RANSAC method
-    // registration.matcherRANSAC(10);
+    registration.matcherRANSAC(10);
     MatrixXi inlierID;
     inlierID = registration.inlierID;
 

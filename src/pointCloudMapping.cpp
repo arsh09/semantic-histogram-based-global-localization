@@ -115,6 +115,7 @@ void Seed_Filling(const cv::Mat& binImg, cv::Mat& lableImg, cv::Mat& image, cv::
 	if (binImg.empty() ||
 		binImg.type() != CV_8UC1)
 	{
+        std::cout << "Binary image is empty. No segmentation waas found" << std::endl;
 		return;
 	}
     
@@ -219,7 +220,10 @@ void Seed_Filling(const cv::Mat& binImg, cv::Mat& lableImg, cv::Mat& image, cv::
 
                     float Dep;
                     Dep = (float(depthClone.at<uchar>(curX, curY))/255)*100;
-                    if(Dep > 30){
+                    
+                    float depth_threshold = 45;
+                    if(Dep > depth_threshold){
+                        // std::cout << "Ignoring distance: " << Dep << std::endl;
                         continue;
                     }
                     count = count + 1;
@@ -321,13 +325,10 @@ void pointCloudMapping::pointExtraction(vector<uchar> label){
             for(int col = 0; col<imgCol; col++){
                 if(image_gray.at<uchar>(row, col) == label[lab]){
                     image_bw.at<uchar>(row, col) = 255;
-                }
-                else{
-                    image_bw.at<uchar>(row, col) = 0;
-                }
-
+                } 
             }
         }
+
         cv::Mat labelImg;
         // /cout<<"label: "<<lab<<endl;
         Seed_Filling(image_bw, labelImg, image, depth, centerX, centerY, temp, Cpoint, lab, LabelValue, T);
@@ -342,7 +343,7 @@ void pointCloudMapping::pointExtraction(vector<uchar> label){
         // waitKey(2000);
 
     }
-    imshow("aaa", image);
+    imshow("Segmentation", image);
     transformPointCloud (*temp, *temp, T);
     *Cloud = *temp;
     cout<<"The number of keypoint is: "<<Cloud->points.size()<<" points"<<endl;    
@@ -381,7 +382,7 @@ void pointCloudMapping::pointExtraction(vector<uchar> label, Mat labelimag){
         // waitKey(2000);
 
     }
-    imshow("aaa", image);
+    imshow("Segmentation", image);
     transformPointCloud (*temp, *temp, T);
     *Cloud = *temp;
     cout<<"The number of keypoint is: "<<Cloud->points.size()<<" points"<<endl;    
