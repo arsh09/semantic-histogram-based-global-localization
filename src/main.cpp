@@ -20,26 +20,16 @@ int main(int argc, const char * argv[])
         return 1;
     }
 
-    char file_name1[1024];
-    char fullpath1[1024];
-    char file_name2[1024];
-    char fullpath2[1024];
-
-    sprintf(file_name1, "%s/", argv[1]);
-    sprintf(fullpath1,"/data/airsim_2/%s",file_name1);
     int startPoint1 = atoi(argv[2]);
     int fileNumber1 = atoi(argv[3]);
-    cout<<"file number is: "<<fileNumber1<<endl;
     
-    sprintf(file_name2, "%s/", argv[4]);
-    sprintf(fullpath2,"/data/airsim_2/%s",file_name2);
-
     int startPoint2 = atoi(argv[5]);
     int fileNumber2 = atoi(argv[6]);
 
-    string dir1 = "/data/airsim_2/backwardCar/"; // fullpath1;
-    string dir2 = "/data/airsim_2/forwardCar/";  // fullpath2;
-    
+    string dir1 = "/data/airsim_2/" + string(argv[1]) + "/";  // fullpath2;
+    string dir2 = "/data/airsim_2/" + string(argv[4]) + "/"; // fullpath1;
+
+
     //generate the camera parameter
     vector<float> camera(4);
     float scale = 1;

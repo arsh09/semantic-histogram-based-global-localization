@@ -36,7 +36,7 @@
 void insertPose(string&dir, Mat&pose, int number){
 
     // Temporary storage for the file data
-    std::vector<std::vector<float>> data;
+    std::vector<std::vector<double>> data;
 
     std::cout << "Readning poses...\n" ;
 
@@ -51,13 +51,13 @@ void insertPose(string&dir, Mat&pose, int number){
     // Read the file line by line
     while (std::getline(file, line)) {
         std::istringstream iss(line);
-        std::vector<float> row(7); // There are 7 columns
+        std::vector<double> row(7); // There are 7 columns
         // std::cout << "Line: " << line << std::endl;
         for (int i = 0; i < 7; ++i) {
             std::string token;
             std::getline(iss, token, ','); // Assuming tab-separated values
             // std::cout << "Token: " << token << std::endl;
-            row[i] = std::stof(token);
+            row[i] = std::stod(token);
         }
         data.push_back(row);
     }
@@ -68,19 +68,19 @@ void insertPose(string&dir, Mat&pose, int number){
     // Now that we have all data, create an OpenCV Mat with the appropriate size
     for (size_t i = 0; i < data.size(); ++i) {
         for (int j = 0; j < 7; ++j) {
-            pose.at<float>(i, j) = data[i][j];
+            pose.at<double>(i, j) = data[i][j];
         }
     }
 
     // Example: print the first row (if there is one)
-    if (!data.empty()) {
-        for (int k = 0; k < data.size(); ++k){
-            std::cout << "Pose: " << k << "   ";
-            for (int i = 0; i < 7; ++i) {
-                std::cout << pose.at<float>(k, i) << (i < 6 ? "\t" : "\n");
-            }
-        }
-    }
+    // if (!data.empty()) {
+    //     for (int k = 0; k < data.size(); ++k){
+    //         std::cout << "Pose: " << k << "   ";
+    //         for (int i = 0; i < 7; ++i) {
+    //             std::cout << pose.at<double>(k, i) << (i < 6 ? "\t" : "\n");
+    //         }
+    //     }
+    // }
 
 }
 
