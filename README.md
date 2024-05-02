@@ -1,5 +1,78 @@
 # Semantic Histogram Based Graph Matching for Real-Time Multi-Robot Global Localization in Large Scale Environment
 
+### GAIA Changes: 
+
+```bash 
+# build instructions are same as below. Except, you may need to copy the 
+# libpango*.so files as cmake has hard time finding it. 
+
+$ sudo apt-get install libpango-1.0.0-dev libopencv-dev libeignen3-dev libpcl-dev 
+$ git clone https://https://github.com/gxytcrc/Semantic-Graph-based--global-Localization.git
+$ mkdir build
+$ cd build 
+$ cmake ..
+# if the build fails due to pango lib, copy the pango*.so files in build folder. 
+# as cmake is having a hard time finding it.
+$ make -j8
+```
+
+I have added another example to make this work with GAIA project. Please see example 'main_airsim_xview.cpp'. 
+
+You need the dataset in the following format: 
+
+1) Two different day or view datasets, let say folder1 and folder2. 
+2) Folder one looks like: 
+
+```
+dataset\
+    forward/
+        segmentation_pallet.png
+        depth/  
+            image1.png
+            image2.png
+            .
+            .
+            .
+
+        segmentation/
+            image1.png
+            imgae2.png
+            .
+            .
+            .
+        
+    backward/ 
+        segmentation_pallet.png
+        depth/  
+            image1.png
+            image2.png
+            .
+            .
+            .
+
+        segmentation/
+            image1.png
+            imgae2.png
+            .
+            .
+            .
+
+
+```
+
+
+Where segmentation_pallet.png is the segment-color-to-index image (1-column image). 
+
+### Run: 
+
+```bash
+$ ./example_2 /path/to/dataset/ start-frame-index end-frame-index forward start-frame-index end-frame-index backward /path/to/dataset/segmentation_pallet.png 
+
+# note that segmentation_pallet.png will be same for forward and backward, but for brevity, I copy it in both the folder. 
+```
+
+
+
 ### Related Publications:
 
 Xiyue Guo, Junjie Hu, Junfeng Chen, Fuqin Deng, Tin Lun Lam, **Semantic Histogram Based Graph Matching for Real-Time Multi-Robot Global Localization in Large Scale Environment**, IEEE Robotics and Automation Letters, 2021. **[PDF](https://arxiv.org/pdf/2010.09297.pdf)**. 
