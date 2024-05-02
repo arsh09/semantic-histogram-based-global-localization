@@ -13,9 +13,9 @@ using namespace Eigen;
 
 int main(int argc, const char * argv[])
 {
-    if(argc!=7)
+    if(argc!=8)
     {
-        cout << "usage: ./SLAM_Project address frameCount" << endl;
+        cout << "usage: ./example_2 <path-to-db-dir> <frame-start> <frame-end> <path-to-query-dir> <frame-start> <frame-end> <dir-path-to-segmentation-pallet>" << endl;
         return 1;
     }
 
@@ -25,8 +25,8 @@ int main(int argc, const char * argv[])
     int startPoint2 = atoi(argv[5]);
     int fileNumber2 = atoi(argv[6]);
 
-    string dir1 = "/data/airsim_xview/" + string(argv[1]) + "/";  // fullpath2;
-    string dir2 = "/data/airsim_xview/" + string(argv[4]) + "/"; // fullpath1;
+    string dir1 = string(argv[1]) + "/";  // fullpath2;
+    string dir2 = string(argv[4]) + "/"; // fullpath1;
     
     //generate the camera parameter
     vector<float> camera(4);
@@ -51,7 +51,7 @@ int main(int argc, const char * argv[])
     Mat pose2 = cv::Mat::zeros(num_poses, 7, CV_64FC1);
 
     //generate the correspondent rgb value of all labels in the segmentation image
-    Mat label_bgr = cv::imread("/data/airsim_xview/segmentation_pallet.png");
+    Mat label_bgr = cv::imread( string(argv[7]) + "/segmentation_pallet.png" );
     Mat Label; 
     Mat label_gray_img;
     cvtColor(label_bgr, Label, COLOR_BGR2RGB);
@@ -59,7 +59,16 @@ int main(int argc, const char * argv[])
     std::vector<uchar> label_gray(255);
     if (label_gray_img.isContinuous()) {
         label_gray.assign(label_gray_img.data, label_gray_img.data + label_gray_img.total()*label_gray_img.channels());
-    }    
+    }
+
+    // Print the RGB values
+    for ( int i = 0; i < 11; i++ ){
+        cv::Vec3b pixel = Label.at<cv::Vec3b>(0,i);
+        std::cout << "R = " << (int)pixel[0] << ", ";
+        std::cout << "G = " << (int)pixel[1] << ", ";
+        std::cout << "B = " << (int)pixel[2] << std::endl;
+    }
+
 
     // Mat Label = (cv::Mat_<int>(11, 3)<< 105,   6,   9,
     //                                 82,   5,   9,
@@ -101,6 +110,12 @@ int main(int argc, const char * argv[])
     //neighbor = Nei2.getNeighbor();
     //cout<<neighbor<<endl;
 
+    std::cout << "Number of nodes in map graph: " << centerpoint1.size() << std::endl;
+    std::cout << "Number of edges in map graph: " << Nei1.getNeighborCount() << std::endl;
+
+    std::cout << "Number of nodes in query graph: " << centerpoint2.size() << std::endl;
+    std::cout << "Number of edges in query graph: " << Nei2.getNeighborCount() << std::endl;
+
     //obtain the descriptor
     MatrixXf descriptor1;
     Descriptor Des1(Nei1, 1);
@@ -115,9 +130,8 @@ int main(int argc, const char * argv[])
     //matching
     MatrixXi matcherID;
     matcher matches(Des1, Des2, 2);
-    cout<<"Before: matches.getGoodMatcher();"<<endl;
     matcherID = matches.getGoodMatcher();
-    cout<<"after: matches.getGoodMatcher();"<<endl;
+    std::cout << "Number of good matches between map and query graphs: " << matcherID.size() << std::endl;
 
     //begain registration
     //insert the value

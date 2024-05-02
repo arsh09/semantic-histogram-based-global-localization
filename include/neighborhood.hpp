@@ -25,6 +25,7 @@ class Neighborhood
         Neighborhood(vector<vector<float> > Cpoint);
         ~Neighborhood();
         MatrixXf getNeighbor();
+        int getNeighborCount();
         VectorXf label;
     private:
         vector<vector<float> > centerpoint;

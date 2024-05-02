@@ -20,6 +20,7 @@ MatrixXf Neighborhood::getNeighbor(){
 
     MatrixXf neighbor(centerpoint.size(), centerpoint.size());
     neighbor.setZero();
+    int count = 0;
     for(int n = 0; n < centerpoint.size(); n++){
         float x0 = centerpoint[n][0];
         float y0 = centerpoint[n][1];
@@ -36,12 +37,29 @@ MatrixXf Neighborhood::getNeighbor(){
             if(distance<20){
                 neighbor(m, n) = 1;
                 neighbor(n, m) = 1;
+                count += 1;
             }
         }
     }
     return neighbor;
 
 }
+
+
+int Neighborhood::getNeighborCount(){
+    MatrixXf neighbor = getNeighbor();
+    int count = 0;
+    for (int i = 0; i < centerpoint.size(); i++ ){
+        for ( int j = 0; j < centerpoint.size(); j++ ){
+            if ( neighbor(i, j) == 1 ){
+                count += 1;
+            }
+        }
+    }
+
+    return count;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Random walk descriptor

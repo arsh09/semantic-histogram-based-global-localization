@@ -115,7 +115,7 @@ void Seed_Filling(const cv::Mat& binImg, cv::Mat& lableImg, cv::Mat& image, cv::
 	if (binImg.empty() ||
 		binImg.type() != CV_8UC1)
 	{
-        std::cout << "Binary image is empty. No segmentation waas found" << std::endl;
+        std::cout << "Binary image is empty. No segmentation was found" << std::endl;
 		return;
 	}
     
@@ -183,23 +183,7 @@ void Seed_Filling(const cv::Mat& binImg, cv::Mat& lableImg, cv::Mat& image, cv::
 					if (imgClone.at<int>(curX+1, curY) == 255 && abs(Dep0 - Dep4)<1)
 					{
 						neighborPixels.push(std::pair<int,int>(curX+1, curY));
-					}
-                    // if (imgClone.at<int>(curX+1, curY+1) == 255)
-					// {
-					// 	neighborPixels.push(std::pair<int,int>(curX+1, curY+1));
-					// }
-                    // if (imgClone.at<int>(curX+1, curY-1) == 255)
-					// {
-					// 	neighborPixels.push(std::pair<int,int>(curX+1, curY-1));
-					// }
-                    // if (imgClone.at<int>(curX-1, curY-1) == 255)
-					// {
-					// 	neighborPixels.push(std::pair<int,int>(curX-1, curY-1));
-					// }
-                    // if (imgClone.at<int>(curX-1, curY+1) == 255)
-					// {
-					// 	neighborPixels.push(std::pair<int,int>(curX-1, curY+1));
-					// }
+					} 
 
                     //generate 2D center
                     float u0 = (float)curY;
@@ -280,14 +264,14 @@ void Seed_Filling(const cv::Mat& binImg, cv::Mat& lableImg, cv::Mat& image, cv::
                             float previousLab = Cpoint[sizeI][3];
                             if(cp[3] == previousLab){
                                 Distance = sqrt(pow(Cpoint[sizeI][0] - cp[0],2) + pow(Cpoint[sizeI][1] - cp[1],2) + pow(Cpoint[sizeI][2] - cp[2],2));
-                                //cout<<"distance: "<<Distance<<endl;
-                                if(Distance<5 && lab>7){
+                                // cout<<"distance: "<<Distance<<endl;
+                                if(Distance<5 && lab>7){  
                                     // cout<<Cpoint[sizeI][2]<<endl;
                                     // cout<<cp[2]<<endl;
                                     //cout<<"______________Road point fuse________________"<<endl;
                                     fuse = true;
                                 }
-                                else if(Distance<5 && lab<8){
+                                else if(Distance<5 && lab<8){ 
                                     // Cpoint[sizeI][0] = (Cpoint[sizeI][0] + cp[0])/2;
                                     // Cpoint[sizeI][1] = (Cpoint[sizeI][1] + cp[1])/2;
                                     // Cpoint[sizeI][2] = (Cpoint[sizeI][2] + cp[2])/2;
@@ -300,6 +284,8 @@ void Seed_Filling(const cv::Mat& binImg, cv::Mat& lableImg, cv::Mat& image, cv::
                             continue;
                         }
                     }
+
+                    std::cout << cp[0] << "  " << cp[1] << "  " << cp[2] << "  " << cp[3] << std::endl;
                     temp->push_back(point);
                     Cpoint.push_back(cp);
 
@@ -332,13 +318,21 @@ void pointCloudMapping::pointExtraction(vector<uchar> label){
         cv::Mat labelImg;
         // /cout<<"label: "<<lab<<endl;
         Seed_Filling(image_bw, labelImg, image, depth, centerX, centerY, temp, Cpoint, lab, LabelValue, T);
-        //cout<<centerX.size()<<endl;
+        // cout<<"Sizes: " << centerX.size() << "  " << Cpoint.size() <<endl;
+
         for(int sizeNum = 0; sizeNum<centerX.size(); sizeNum++){
             Point p1;
             p1.x = centerX[sizeNum];
             p1.y = centerY[sizeNum];
             circle(image, p1, 15,Scalar(255,255,0),3);
         }
+
+        // cv::Vec3b pixel = LabelValue.at<cv::Vec3b>(0,lab);
+        // std::cout << lab << "\t" << (int) label[lab] << "\t";
+        // std::cout << "R = " << (int)pixel[0] << ", ";
+        // std::cout << "G = " << (int)pixel[1] << ", ";
+        // std::cout << "B = " << (int)pixel[2] << std::endl;
+
         // imshow("bbb", image_bw);
         // waitKey(2000);
 

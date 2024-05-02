@@ -93,6 +93,14 @@ int main(int argc, const char * argv[])
     //neighbor = Nei2.getNeighbor();
     //cout<<neighbor<<endl;
 
+
+    std::cout << "Number of nodes in map graph: " << centerpoint1.size() << std::endl;
+    std::cout << "Number of edges in map graph: " << Nei1.getNeighborCount() << std::endl;
+
+    std::cout << "Number of nodes in query graph: " << centerpoint2.size() << std::endl;
+    std::cout << "Number of edges in query graph: " << Nei2.getNeighborCount() << std::endl;
+
+
     //obtain the descriptor
     MatrixXf descriptor1;
     Descriptor Des1(Nei1, 1);
@@ -109,7 +117,8 @@ int main(int argc, const char * argv[])
     matcher matches(Des1, Des2, 2);
     // cout<<"Before: matches.getGoodMatcher();"<<endl;
     matcherID = matches.getGoodMatcher();
-    // cout<<"after: matches.getGoodMatcher();"<<endl;
+    cout<<"after: matches.getGoodMatcher() " << matcherID.size() <<endl;
+    std::cout << "Number of good matches between map and query graphs: " << matcherID.size() << std::endl;
 
 
     //begain registration
